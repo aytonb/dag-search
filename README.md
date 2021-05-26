@@ -9,6 +9,11 @@ For benchmarking purposes, this package also includes implementations of A* and 
 This package is implemented in Common Lisp. It has only been tested in SBCL.
 
 
+## License
+
+This project is released under the BSD 3-Clause License. This is research level code, provided in an "as is" state.
+
+
 ## Dependencies
 
 The following dependencies **available in quicklisp** are required:
