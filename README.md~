@@ -1,0 +1,51 @@
+# DAG Search
+
+## Purpose
+
+This package implements search for optimal directed acyclic graphs (DAGs) using A* with bounding conflicts, as described in the paper "DAG-GPs: Learning Directed Acyclic Graph Structure For Multi-Output Gaussian Processes". Search is designed to reach optimality while evaluating as few likelihoods as possible, making it valuable when likelihoods are computationally expensive to evaluate.
+
+For benchmarking purposes, this package also includes implementations of A* and tabu search.
+
+This package is implemented in Common Lisp. It has only been tested in SBCL.
+
+
+## Dependencies
+
+The following dependencies **available in quicklisp** are required:
+
+- [priority-queue](https://github.com/dsorokin/priority-queue) (Custom permissive license)
+
+
+## Getting Started
+
+This package can be loaded with quicklisp or asdf.
+
+Simple setup and usage for a problem with 3 variables and 50 data points looks like this:
+
+```
+(use-package :dag-search)
+
+;; Make a score object
+(defparameter score (make-instance 'gp-bic-score
+                                   :n-vars 3
+                                   :n-data-points 50))
+
+;; Make an initial search node
+(defparameter initial-node (make-initial-search-node 3))
+
+;; Determine k-groups for heuristics
+(defparameter k-groups '((0) (1) (2)))
+
+;; Define a function that returns likelihood
+(defun lik-fn (variable parents)
+  ;; Expensive to compute function here...
+)
+
+;; Run A*BC search, returns (terminal-node queue scores expanded-list)
+(defparameter abc-out (abc-search initial-node score #'lik-fn k-groups))
+
+;; Extract the best DAG edges
+(edges (first abc-out))
+```
+
+`abc-search` returns a list `(terminal-node queue scores expanded-list)`. `terminal-node` is the final expanded search node, `queue` is the remaining search queue, `scores` is a structure containing all evaluated scores, and `expanded-list` is an expanded list used in A* search. All information about the best DAG is in `terminal-node`. The remaining outputs are primarily used for debug purposes or to extract statistics about the solution process, like how many times the likelihood function was run.
